@@ -1,10 +1,12 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Flat(models.Model):
     owner = models.CharField('ФИО владельца', max_length=200)
+    owners_normalized_phonenumber = PhoneNumberField('Нормализованный номер владельца', blank=True)
     owners_phonenumber = models.CharField('Номер владельца', max_length=20)
     new_building = models.BooleanField(null=True)
     created_at = models.DateTimeField(
@@ -41,7 +43,7 @@ class Flat(models.Model):
         blank=True,
         db_index=True)
 
-    has_balcony = models.NullBooleanField('Наличие балкона', db_index=True)
+    has_balcony = models.BooleanField('Наличие балкона', db_index=True, null=True)
     active = models.BooleanField('Активно-ли объявление', db_index=True)
     construction_year = models.IntegerField(
         'Год постройки здания',
@@ -49,7 +51,7 @@ class Flat(models.Model):
         blank=True,
         db_index=True)
 
-    liked_by = models.ManyToManyField(User, related_name="liked_flats")
+    liked_by = models.ManyToManyField(User, related_name="liked_flats", blank=True)
 
     def __str__(self):
         return f'{self.town}, {self.address} ({self.price}р.)'
@@ -58,11 +60,15 @@ class Flat(models.Model):
 class Complaint(models.Model):
     user = models.ForeignKey(
         User,
-        'Кто жаловался:',
-        null=True)
+        related_name="complaints",
+        verbose_name='Кто жаловался:',
+        null=True,
+        on_delete=models.SET_NULL)
     flat = models.ForeignKey(
         Flat,
-        'Квартира, на которую пожаловались:',
-        null=True)
+        related_name="complaints",
+        verbose_name='Квартира, на которую пожаловались:',
+        null=True,
+        on_delete=models.SET_NULL)
     address = models.TextField(
         'Текст жалобы:')

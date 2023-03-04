@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
 
     'property.apps.PropertyConfig',
+    "phonenumber_field",
 ]
 
 MIDDLEWARE = [
@@ -78,6 +79,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
